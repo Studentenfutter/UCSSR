@@ -16,15 +16,15 @@ editor_options:
 
 The official release is available via CRAN and can be installed using the `install.packages` function. Windows users can work with precompiled dependencies, so it should work 'out of the box'. Users of macOS please read the note at the end of this slide.
 
-````{r, eval = FALSE}
+```{r, eval = FALSE}
 install.packages("polmineR")
 ```
 
 The current development version of polmineR is available via GitHub. It contains new functions and improved documentation. The installation is performed using `install_github` from the `devtools` package.
 
-````{r, eval = FALSE}
+```{r, eval = FALSE}
 install.packages("devtools")
-devtools::install_github("PolMine/polmineR", ref ="dev")
+devtools::install_github("PolMine/polmineR", ref = "dev")
 ```
 
 *Important:* Users of macOS and Linux must install the libraries _pcre_ and _GLib_ in the terminal for the RcppCWB package prior to installing polmineR. Please refer to the installation instructions for the polmineR package [here](https://polmine.github.io/polmineR/index.html).
@@ -34,7 +34,7 @@ devtools::install_github("PolMine/polmineR", ref ="dev")
 
 A new installation mechanism is used for the GermaParl package. First a (relatively small) package is installed, which only contains test or demonstration data. The actual data of the GermaParl body is then downloaded subsequently. This is done through the 'drat' repository of the PolMine project at GitHub. Therefore, the 'drat' package is installed first.
 
-````{r, eval = FALSE}
+```{r, eval = FALSE}
 install.packages("drat")
 drat::addRepo("polmine") # in this case: 'polmine' must be written in lower case!
 
@@ -44,14 +44,14 @@ install.packages("GermaParl")
 
 Now we can load the GermaParl package and get the actual data.
 
-````{r, eval = FALSE}
+```{r, eval = FALSE}
 library("GermaParl")
 germaparl_download_corpus()
 ```
 
 To test if GermaParl is available, we load polmineR and activate the GermaParl corpus:
 
-````{r,eval = FALSE}
+```{r,eval = FALSE}
 library(polmineR)
 use("GermaParl")
 corpus()
