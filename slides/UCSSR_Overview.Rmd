@@ -15,7 +15,7 @@ editor_options:
 
 ## Slide decks of the UCSSR series
 
-  * [Installating _polmineR_ and _GermaParl_](https://polmine.github.io/UCSSR/UCSSR_Getting_Started.html)
+  * [Installing _polmineR_ and _GermaParl_](https://polmine.github.io/UCSSR/UCSSR_Getting_Started.html)
   * [Use of concordances in 'polmineR'](https://polmine.github.io/UCSSR/polmineR_KWIC.html)
   * [Using the CQP Syntax with polmineR](https://polmine.github.io/UCSSR/polmineR_CQP.html)
   * [Time series analysis with polmineR](https://polmine.github.io/UCSSR/polmineR_Zeitreihen.html)
