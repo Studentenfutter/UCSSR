@@ -4,10 +4,10 @@ subtitle: 'Basics of Sentiment Analysis'
 author: "Andreas Blaette"
 date: "25. Juli 2018"
 output:
+  ioslides_presentation: default
+  beamer_presentation: default
   slidy_presentation:
     footer: Copyright (c) 2018, Andreas Blaette
-  beamer_presentation: default
-  ioslides_presentation: default
 editor_options: 
   chunk_output_type: console
 ---
@@ -16,31 +16,31 @@ editor_options:
 klippy::klippy()
 ```
 
-## Grundlagen der Sentiment-Analyse
+## Fundamentals of sentiment analysis
 
-Sentiment-Analysen erfreuen sich großer Beliebtheit. Text Mining-Blogs zeigen in vielen Varianten die Möglichkeiten, die Variation von Bewertungen von Texten mit einem numerischen Indikator zu erfassen und Veränderungen im Zeitverlauf zu analysieren und darzustellen.
+Sentiment analyses are very popular. Text Mining blogs are showing the many possibilities to capture the variation of text evaluations with a numerical indicator and how to analyse and display changes over time.
 
-Welche Kinofilme werden besonders gut oder besonders schlecht bewertet? Dies lässt sich anhand von Filmbesprechungen untersuchen. Wie ist die Resonanz von Kunden auf ein neu in den Markt eingeführtes Produkt? Dazu lassen sich Kommentare in sozialen Medien untersuchen. Es gibt sicherlich eine Palette nützlicher Einsatzszenarien für Sentiment-Analysen, gerade auch jenseits der Wissenschaft.
+Which movies are rated particularly good or particularly bad? This can be examined by using film reviews. What is the response of customers to a new product launched on the market? Comments in social media can be examined for this purpose. There is certainly a range of useful application scenarios for sentiment analyses, especially beyond science.
 
-Welchen Nutzen haben Sentiment-Analysen in wissenschaftlichen Arbeiten? Zentrale Fragen sind hier, was man eigentlich misst, wenn man "Sentiments" misst. Ist die Validität der Messung gegeben, misst man was man glaubt zu messen? Aus den Antworten leitet sich ab, wann und wie Sentiment-Analysen gut begründet als Forschungsinstrument eingesetzt werden können. Wesentlich ist dabei folgender Unterschied:
+What are the benefits of sentiment analyses in scientific work? The central questions here are what one actually measures when one measures "sentiments". Is the validity of the measurement given, does one measure what one believes to measure? From the answers it can be derived when and how sentiment analyses can be used as a well-founded research instrument. The essential difference is as follows:
 
-  * _Diktionärsbasierte_ Verfahren messen anhand von Listen mit positivem / negativem Vokabular.
-  * _Machine Learning_-basierte Verfahren gehen aus von Trainingsdaten mit bekannten Bewertungen und treffen qua Algorithmus Ableitungen für neu zu bewertende Texte. 
+  * _Dictionary-based_ methods measure using lists with positive / negative vocabulary.
+  * _Machine Learning_ based methods are developed from training data with known evaluations and make derivations for texts to be reassessed using an algorithm. 
   
-In dieser Anleitung arbeiten wir mit einem - deutlich einfacheren - diktionärsbasierten Verfahren und einem klassischen Diktionär, "SentiWS".
+In this manual we work with a, much simpler, dictionary-based method and a classic dictionary, "SentiWS".
 
 
 ---- 
 
-## Erforderliche Installationen / Pakete
+## Required installations / packages
 
-Die folgenden Erläuterungen nutzen das `polmineR`-Paket und das `GermaParl`-Korpus. Die Installation wird in einem eigenen Foliensatz erläutert. Ergänzend nutzen wir die folgenden Pakete:
+The following explanations use the `polmineR` package and the `GermaParl` corpus. The installation is explained in a separate set of slides. In addition, we use the following packages:
 
-  * `zoo`: Ein Paket zur Arbeit mit Zeitreihen-Daten;
-  * `magrittr`: Tools, um R-Befehle in einer "Pipe"" hintereinander zu verketten (s.u.);
-  * `devtools`: Entwicklertools, wir nutzen einen Befehl für den Download einer einzelnen Funktion;
+  * `zoo`: A package for working with time series data;
+  * `magrittr`: Tools for chaining R commands in a "pipe" one after the other (see below);
+  * `devtools`: developer tools, we use a command to download a single function;
 
-Der folgende Code prüft, ob diese Pakete installiert sind und nimmt die Installation vor, falls erforderlich.
+The following code checks whether these packages are installed and installs them if necessary.
 
 ```{r install_required_packages, eval = TRUE}
 required_packages <- c("zoo", "magrittr", "devtools")
@@ -49,7 +49,7 @@ for (pkg in required_packages){
 }
 ```
 
-Bitte beachten Sie, dass die Funktionalität für den folgenden Workflow erst mit polmineR-Version `r as.package_version("0.7.9.9005")` zur Verfügung steht. Installieren Sie bei Bedarf die aktuelle Entwicklungsversion von polmineR.
+Please note that the functionality for the following workflow is only available with polmineR version `r as.package_version("0.7.9.9005")`. If required, install the current development version of polmineR.
 
 ```{r update_polmineR, eval = TRUE}
 if (packageVersion("polmineR") < as.package_version("0.7.9.9005"))
@@ -60,9 +60,9 @@ if (packageVersion("polmineR") < as.package_version("0.7.9.9005"))
 ----
 
 
-## Los geht's 
+## Let's go
 
-Die erforderlichen Pakete werden nun geladen.
+The required packages are now loaded.
 
 ```{r load_libraries, eval = TRUE}
 library(zoo, quietly = TRUE, warn.conflicts = FALSE)
@@ -71,7 +71,7 @@ library(magrittr)
 library(data.table)
 ```
 
-Wir laden auch polmineR und aktivieren das GermaParl-Korpus, das über das GermaParl-Paket verfügbar ist.
+We also load polmineR and activate the GermaParl corpus, which is available through the GermaParl package.
 
 ```{r load_polmineR, eval = TRUE}
 library(polmineR)
@@ -82,29 +82,29 @@ use("GermaParl")
 
 ## Source in function 'get_sentiws' from a GitHub gist
 
-Als Diktionär nutzen wir in der folgenden exemplarischen Analyse den SentimentWortschatz des Leipziger Wortschatz-Projekts, kurz "SentiWS". Eine Erläuterung finden Sie [hier](http://wortschatz.uni-leipzig.de/de/download). Die Daten stehen unter einer CC-BY-SA-NC Lizenz zur Verfügung und können im wissenschaftlichen Kontext ohne lizenzrechtliche Einschränkungen verwendent werden. Erforderlich ist selbstverständlich, dass die Daten korrekt zitiert werden.
+In the following exemplary analysis we use the sentiment dictionary of the Leipzig Vocabulary Project, in short "SentiWS". You can find an explanation [here](http://wortschatz.uni-leipzig.de/de/download). The data is available under a CC-BY-SA-NC license and can be used in a scientific context without licensing restrictions. It goes without saying that the data must be quoted correctly.
 
-SentWS kann als zip-Datei heruntergeladen werden. Um die Dinge weiter zu vereinfachen ist als Gist bei der GitHub-Präsenz des PolMine-Projekts eine Funktion hinterlegt, die den Download erledigt und automatisch eine tabellarische Datenstruktur generiert, wie wir sie benötigen werden.
+SentWS can be downloaded as a zip file. To make things even easier, the GitHub presence of the PolMine project includes a function that does the download and automatically generates a tabular data structure as we will need it.
 
 ```{r get_senti_ws, eval = TRUE}
 gist_url <- "https://gist.githubusercontent.com/PolMine/70eeb095328070c18bd00ee087272adf/raw/c2eee2f48b11e6d893c19089b444f25b452d2adb/sentiws.R"
-devtools::source_url(gist_url) # danach ist Funktion verfügbar
+devtools::source_url(gist_url) # after execution, the function is available
 SentiWS <- get_sentiws()
 ```
 
-Damit ist mit dem Objekt `SentiWS` das Diktionär verfügbar.
+Now the object `SentiWS` represents the available sentiment dictionary.
 
 ----
 
-## SentiWS: Ein Blick in die Daten
+## SentiWS: First look at the data
 
-Das SentiWS-Objeckt ist ein `data.table`. Wir nutzen das anstelle eines klassischen `data.frame`, weil das später das Matching der Daten (Worte im Korpus und Worte im Diktionär) erleichtert und beschleunigt. Damit wir verstehen, womit wir arbeiten, werfen wir einen schnellen Blick in die Daten.
+The SentiWS object is a `data.table` object. We use this instead of a classic `data.frame`, because it will later facilitate and accelerate the matching of the data (words in the corpus and words in the dictionary). To understand what we are working with, we take a quick look at the data.
 
 ```{r inspect_senti_ws, eval = TRUE}
 head(SentiWS, 5)
 ```
 
-In der letzten Spalte ("weight") sehen Sie, dass Worten im Diktionär eine Gewichtung zugewiesen ist. Diese kann positiv sein (bei "positivem" Vokabular) oder negativ (bei "negativen" Worten). Außerdem sehen Sie, dass neben der Wortform ("word"-Spalte) auch Lemmata aufgeführt sind sowie eine Part-of-Speech-Klassifikation. Letzteres macht eine eindeutige Zuordnung möglich. Die Spalte "base" mit einem logischen Wert (TRUE/FALSE) ergibt sich technischer aus der Umwandlung der vom Leipziger Wortschatzprojekt heruntergeladenen Tabelle in die extensive Form: In der Roh-Tabelle findet sich in jeder Zeile ein Lemma. Dementsprechend können wir prüfen, wie viele positive bzw. negative Worte als Grundform in der Tabelle sind.
+In the last column ("weight") you can see that words are assigned a weighting in the dictionary. This can be positive (for "positive" vocabulary) or negative (for "negative" words). You can also see that in addition to the word column, lemmata and a Part-of-Speech classification are also listed. The latter makes a clear assignment possible. The column "base" with a logical value (TRUE/FALSE) results more technically from the conversion of the table downloaded from the Leipzig Vocabulary Project into an extensive form: There is a lemma in each row of the raw table. Accordingly, we can check how many positive or negative words are in the table as a basic form.
 
 ```{r, eval = TRUE}
 vocab <- c(positive = nrow(SentiWS[base == TRUE][weight > 0]), negative = nrow(SentiWS[base == TRUE][weight < 0]))
@@ -113,19 +113,18 @@ vocab
 
 ----
 
-# Positives / negatives Vokabular in Wortumfeldern
+# Positive / negative vocabulary in word environments
 
-Wir untersuchen nun das Wortumfeld eines interessanten Begriffs. Weil es so einfach, relevant und plakativ ist, stellen wir die Frage, wie sich die positiven/negativen Konnotationen des Islams im Zeitverlauf entwickelt haben.
+We now examine the word environment of an interesting term. Because it is so simple, relevant and bold, we ask how the positive/negative connotations of Islam have developed over time.
 
-Eine Vorfrage ist, wie groß der linke und rechte Wortkontext sein soll, der untersucht wird. In linguistischen Untersuchungen ist ein Kontext von fünf Worten links und rechts gängig. Für politische Bedeutungszuweisungen mag mehr erforderlich sein. Wir gehen von 10 Worten aus und setzen dies folgendermaßen für unsere R-Sitzung fest.
-
+A preliminary question is how large the left and right word contexts to be examined should be. In linguistic studies, a context of five words left and right is common. More may be needed for political assignments of meaning. We start from 10 words and set this for our R-session as follows.
 
 ```{r}
 options("polmineR.left" = 10L)
 options("polmineR.right" = 10L)
 ```
 
-Über eine "Pipe" generieren wir nun einen `data.frame` ("df") mit den Zählungen des SentiWS-Vokabulars im Wortumfeld von "Islam". Die Pipe ermöglicht es, die Schritte nacheinander durchzuführen, ohne Zwischenergebnisse zu speichern.
+Via a "pipe" we now generate a `data.frame` ("df") with the counts of the SentiWS vocabulary in the word environment of "Islam". The pipe makes it possible to carry out the steps one after the other without saving intermediate results.
 
 ```{r}
 df <- context("GERMAPARL", query = "Islam", p_attribute = c("word", "pos"), verbose = FALSE) %>%
@@ -137,9 +136,9 @@ df <- context("GERMAPARL", query = "Islam", p_attribute = c("word", "pos"), verb
 
 ----
 
-## Die tabellarischen Daten der Sentiment-Analyse
+## The tabular data of the sentiment analysis
 
-Der df-data.frame führt die Statistik des Wortumfelds eines jeden Auftretens von "Islam" im Korpus auf. Um die Dinge einfach zu halten, arbeiten wir zunächst nicht mit den Gewichtungen, sondern nur mit dem positiven bzw. negativen Worten. Wir vereinfachen die Tabelle entsprechend und sehen sie an.
+The df-data.frame lists the statistics of the word surroundings of each occurrence of "Islam" in the corpus. To keep things simple, we do not initially work with the weightings, but only with the positive or negative words. We simplify the table accordingly and look at it.
 
 ```{r}
 df <- df[, c("name", "size", "positive_n", "negative_n")] 
@@ -152,7 +151,8 @@ head(df, n = 15)
 
 # Aggregation
 
-Als Namen eines Wortkontexts haben wir oben das Datum des Auftretens unseres Suchbegriffs genutzt. Das ermöglicht es, anhand des Datums für das Jahr hochzuaggregieren.
+As name of a word context we used the date of the occurrence of our search term above. This makes it possible to aggregate upwards on the basis of the date for the year.
+
 
 ```{r}
 df[["year"]] <- as.Date(df[["name"]]) %>% format("%Y-01-01")
@@ -160,14 +160,14 @@ df_year <- aggregate(df[,c("size", "positive_n", "negative_n")], list(df[["year"
 colnames(df_year)[1] <- "year"
 ```
 
-Es ist allerdings nicht sinnvoll, mit den absoluten Häufigkeiten zu arbeiten. Daher fügen wir Spalten ein, die den Anteil des negativen bzw. positiven Vokabulars angeben.
+However, it does not make sense to work with the absolute frequencies. Therefore, we insert columns that indicate the proportion of negative or positive vocabulary.
 
 ```{r}
 df_year$negative_share <- df_year$negative_n / df_year$size
 df_year$positive_share <- df_year$positive_n / df_year$size
 ```
 
-Dies wandeln wir in ein Zeitreihen-Objekt im eigentlichen Sinne um.
+We convert this into a time series object in the actual sense.
 
 ```{r}
 Z <- zoo(
@@ -179,7 +179,7 @@ Z <- zoo(
 
 ----
 
-## Visualisierung
+## Visualisation
 
 ```{r}
 plot(
@@ -190,9 +190,9 @@ plot(
 
 ----
 
-## Wie gut sind eigentlich die Ergebnisse?
+## How good are the results?
 
-Aber was verbirgt sich eigentlich hinter den numerischen Werten der ermittelten Sentiment-Scores? Um dem nachzugehen, nutzen wir die Möglichkeit von polmineR, eine KWIC-Ausgabe entsprechend einer Positiv-Liste (Vektor mit erforderlichen Worten) zu reduzieren, Worte farblich zu codieren und über Tooltips (hier: Wortgewichte) weitergehende Informationen einzublenden. Also: Fahren Sie auch mit der Maus auf die angemarkerten Worte!
+But what is actually behind the numerical values of the determined sentiment scores? To investigate this, we use the possibility of polmineR to reduce a KWIC output according to a positive-list (vector with required words), to color-code words and to show further information via tooltips (here: word weights). So: Move your mouse over the highlighted words!
 
 ```{r, eval = TRUE}
 words_positive <- SentiWS[weight > 0][["word"]]
@@ -206,7 +206,7 @@ kwic("GERMAPARL", query = "Islam", positivelist = c(words_positive, words_negati
   as("htmlwidget") -> Y
 ```
 
-Das im Objekt Y gespeicherte Ergebnis (ein 'htmlwidget') sehen wir uns auf einer gesonderten Folie an.
+The result stored in object Y (a 'htmlwidget') is shown on a seperate slide.
 
 ----
 
@@ -216,8 +216,8 @@ Y
 
 ----
 
-## Diskussion
+## Discussion
 
-  * Wir interpretieren Sie die Ergebnisse der Zeitreihen-Analyse?
-  * Wie valide sind die Ergebnisse?
-  * Ist der Übergang zur Arbeit mit Wort-Gewichten sinnvoll oder erforderlich?
+  * How do you interpret the results of the time series analysis?
+  * How valid are the results?
+  * Is the transition to working with word weightings useful or necessary?
