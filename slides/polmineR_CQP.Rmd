@@ -50,11 +50,12 @@ if (interactive()) writeLines(text = script, con = filename)
 ```
 
 If you now open the document, you can follow the code step by step. Use the code as a starting point for your own analyses!
+
 ----
 
 ## CWB, CQP and 'polmineR'
 
-The R package uses the so-called *Corpus Workbench* (CWB) to store and retrieve data. The CWB is a bundle of tools with the functionality of an "indexing and query engine". Comparable software that offers advantages for industrial applications would be [Lucene](https://lucene.apache.org/) or [Elasticsearch](https:://www.elastic.co). However, a major advantage of the CWB is the fact that it is completely open source and can be used and further developed in software projects.
+The R package uses the so-called *Corpus Workbench* (CWB) to store and retrieve data. The CWB is a bundle of tools with the functionality of an "indexing and query engine". Comparable software that offers advantages for industrial applications would be [Lucene](https://lucene.apache.org/) or [Elasticsearch](https://www.elastic.co). However, a major advantage of the CWB is the fact that it is completely open source and can be used and further developed in software projects.
 
 EA powerful part of the CWB is the so-called *Corpus Query Processor* (CQP) as an instrument for formulating complex linguistic search queries for large corpora, which can contain regular expressions and linguistic annotations of corpora. The CQP syntax can be used for all basic commands of the polmineR package:
 
@@ -163,7 +164,7 @@ kableExtra::kable_styling(K, font_size = 18, position = "left")
 
 ## CQP II: Searching in the tokenstream
 
-If you use the CQP syntax to search in the p attribute "word", the search term must only be enclosed in quotation marks. To access the other p attributes, the attribute to which you want to refer is specified in square brackets. With the following search term "Q" you search for sequences of a noun, then "with" and a word that begins with "Migrations".
+If you use the CQP syntax to search in the p attribute "word", the search term must only be enclosed in quotation marks. To access the other p attributes, the attribute to which you want to refer is specified in square brackets. With the following search term "Q" you search for sequences of a noun, then "mit" and a word that begins with "Migrations".
 
 
 ```{r, eval = TRUE}
