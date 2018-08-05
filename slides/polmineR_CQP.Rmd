@@ -1,6 +1,6 @@
 ---
-title: "Nutzung der CQP-Syntax mit 'polmineR'"
-subtitle: 'Beispielanalysen mit dem GermaParl-Korpus'
+title: "Using the CQP syntax with 'polmineR'"
+subtitle: 'Sample analyses with the GermaParl corpus'
 author: "Andreas Blaette"
 date: "28 Mai 2018"
 output:
@@ -14,24 +14,24 @@ editor_options:
 
 
 ```{r, message = FALSE, results = "hide", echo = FALSE}
-# Dieser Code wird im Foliensatz nicht angezeigt und ist nur erforderlich,
-# um gegebenenfalls fehlende Pakete nachzuladen:
-# kable und kableExtra werden benötigt, um tabellarische Ausgaben zu generieren.
+# This code is not displayed in the slide set and is only required,
+# to reload any missing packages:
+# kable and kableExtra are needed to generate tabular output.
 if (!"knitr" %in% rownames(installed.packages())) install.packages("knitr")
 if (!"kableExtra" %in% rownames(installed.packages())) install.packages("kableExtra")
 ```
 
 
-## Initialisierung
+## Initialisation
 
-Die Beispiele basieren auf dem GermaParl-Korpus. Der Datensatz in dem Paket muss nach dem Laden von polmineR mit dem `use`-Befehl aktiviert werden.
+The examples are based on the GermaParl corpus. The data set in the package must be activated with the `use` command after loading polmineR.
 
 ```{r initialize, eval = TRUE, message=FALSE}
 library(polmineR)
 use("GermaParl")
 ```
 
-Wenn Sie den Code der folgenden Beispiele auf Ihrem eigenen Rechner nachvollziehen möchten, können Sie das 'Rmarkdown'-Dokument, mit dem der Foliensatz generiert wurde, direkt in R laden:
+If you want to follow the code of the following examples on your own computer, you can load the 'Rmarkdown' document, with which the slide set was generated, directly into R:
 
 ```{r get_code, eval = FALSE}
 if (!"RCurl" %in% rownames(installed.packages())) install.packages("RCurl")
@@ -42,80 +42,77 @@ script <- getURL(
   )
 ```
 
-
-Speichern Sie das Skript auf Ihrem Schreibtisch - oder an einem anderen Speicherort.
+Save the script to your desktop - or to another location.
 
 ```{r save_code, eval = FALSE}
 filename <- "~/Desktop/polmineR_CQP.Rmd"
 if (interactive()) writeLines(text = script, con = filename)
 ```
 
-Wenn Sie jetzt das Dokument öffnen, können Sie den Code Schritt für Schritt nachvollziehen. Nutzen Sie den Code als Ausgnagspunkt für Ihre eigenen Analysen!
-
+If you now open the document, you can follow the code step by step. Use the code as a starting point for your own analyses!
 ----
 
-## CWB, CQP und 'polmineR'
+## CWB, CQP and 'polmineR'
 
-Das R-Paket nutzt für die Speicherung und die Abfrage von Daten die sogenannte *Corpus Workbench* (CWB). Die CWB ist ein Bündel von Tools mit der Funktionalität eines "indexing and query engine". Vergleichbare Software, die für industrielle Anwendungen Vorteile bietet, wären [Lucene](https://lucene.apache.org/) oder [Elasticsearch](https:://www.elastic.co) Ein großer Vorteil der CWB ist jedoch, dass sie vollständig quelloffen ist und in Software-Projekten genutzt und weiterentwickelt werden kann.
+The R package uses the so-called *Corpus Workbench* (CWB) to store and retrieve data. The CWB is a bundle of tools with the functionality of an "indexing and query engine". Comparable software that offers advantages for industrial applications would be [Lucene](https://lucene.apache.org/) or [Elasticsearch](https:://www.elastic.co). However, a major advantage of the CWB is the fact that it is completely open source and can be used and further developed in software projects.
 
-Ein mächtiger Teil der CWB ist der sogenannte *Corpus Query Processor* (CQP) als Instrument, für große Korpora komplexe sprachlich Suchanfragen zur formulieren, die reguläre Ausdrücke und linguistische Annotationen von Korpora beinhalten können. Die CQP-Syntax kann bei allen Basis-Befehlen des polmineR-Pakets genutzt werden:
+EA powerful part of the CWB is the so-called *Corpus Query Processor* (CQP) as an instrument for formulating complex linguistic search queries for large corpora, which can contain regular expressions and linguistic annotations of corpora. The CQP syntax can be used for all basic commands of the polmineR package:
 
-  * `kwic` (Keyword-in-Context-Analysen / Abfrage von Konkordanzen);
-  * `count` (Häufigkeitszählung in Korpora und Sub-Korpora);
-  * `dispersion` (Verteilung von Suchtreffern über ein strukturelles Attribut);
-  * `cooccurrences` (Analyse von Kookkurrenzen im Wortumfeld eines Suchtreffers);
+  * `kwic` (Keyword-in-Context analysis / query of concordances);
+  * `count` (Frequency counting in corpora and sub-corpora);
+  * `dispersion` (Distribution of search hits using a structural attribute);
+  * `cooccurrences` (Analysis of coccurrences in the surrounding word of a search hit);
 
-In den folgenden Beispielen wird überwiegend ganz elementar mit der `count`-Methode gezeigt, wie die CQP-Syntax funktioniert. Denken Sie daran, dass  die anderen Funktionen auch CQP können! Im folgenden Tutorial wird zunächst kurz in die Nutzung regulärer Ausdrücke eingeführt. Dann wird die Nutzung linguistischer Merkmale eines Korpus erläutert.
+In the following examples, the `count` method is used to show how the CQP syntax works. Remember that the other functions are also capable of CQP! The following tutorial briefly introduces the use of regular expressions. We will then explain the use of linguistic features of a corpus.
 
 
+## Search for words
 
-## Suche nach Worten
+The CQP search syntax is passed to the methods with the parameter `query`. The default setting is automatic detection of whether the CQP syntax is used. However, it is recommended to specify explicitly that CQP is used using the logical parameter `cqp`.
 
-Die CQP-Suchsyntax wird mit dem Parameter `query` an die Methoden übergegeben. Voreingestellt ist eine automatische Erkennung, ob die CQP-Syntax verwendet wird. Empfohlen ist jedoch, ausdrücklich über den logischen Parameter `cqp` anzugeben, dass CQP verwendet wird.
-
-Wichtig ist, dass einzelne Suchbegriffe ein Anführungszeichen gesetzt werden müssen und einfache Anführungszeichen den gesammten Suchbegriff umschließen.
+It is important that individual search terms must be enclosed in quotation marks and single quotation marks enclose the entire query.
 
 ```{r}
 count("GERMAPARL", query = '"Diskriminierung"', cqp = TRUE)
 ```
 
-Das *flag* %c kann genutzt werden, um die Differenzierung zwischen Groß- und Kleinschreibung aufzuheben. Das führt zum Beispiel bei allen regulär klein geschriebenen Worten (Adjektiven, Verben etc.) zu großen Unterschieden bei der Zählung, weil sie natürlich am Anfang eines Satzes groß geschrieben werden.
+The *flag* %c can be used to remove the distinction between upper and lower case. This leads, for example, to large differences in the counting of all regular lowercase words (adjectives, verbs, etc.), because they are of course capitalized at the beginning of a sentence.
 
 ```{r}
 count("GERMAPARL", query = c('"Liebe"', '"Liebe" %c'), cqp = TRUE)
-````
+```
 
 
 ----
 
-## Reguläre Ausdrücke: Zeichenklassen
+## Regular expressions: character classes
 
-Zentral für die CQP-Syntax ist, dass bei der Suche nach einzelnen Worten der gesamte Apparat der regulären Ausdrücke genutzt werden kann. Reguläre Ausdrücke sind ein in quasi allen Programmiersprachen verfügbares, standardisiertes Instrument zur Suche nach Zeichenmustern in Text. 
+A key feature of the CQP syntax is that when searching for individual words, the entire set of regular expressions can be used. Regular expressions are a standardized tool available in virtually all programming languages for searching for character patterns in text.
 
-| Ausdruck | Beschreibung |
+| Expression | Description |
 |:-------:| --------------|
-| .       |Ein Punkt (".") steht für ein beliebiges Zeichen |
-| \\d | "digit" (Ziffer), d.h. 0 bis 9 |
-|?|Der voranstehende Ausdruck kommt kein- oder einmal vor.|
-|+|Der voranstehende Ausdruck tritt einmal oder mehrfach auf. |
-|*|Der voranstehende Ausdruck tritt keinmal oder beliebig oft auf.|
-|{n}|Der voranstehende Ausdruck tritt exakt n-fach auf.|
-|{min,}| Der voranstehende Ausdruck tritt mindestens min-fach auf.|
-|{min,max}|Der voranstehende Ausdruck tritt mindestens min-fach und maximal max-fach auf.|
-|{0,max}| Der voranstehende Ausdruck darf maximal max-fach vorkommen.|
+| .       |A dot (".") stands for any character |
+| \\d | "digit", e.g. 0 to 9 |
+|?|The preceding expression does not occur or occurs once.|
+|+|The preceding expression occurs once or more than once. |
+|*|The preceding expression does not occur at all or can occur at will.|
+|{n}|The preceding expression occurs exactly n times.|
+|{min,}| The preceding expression occurs at least min times.|
+|{min,max}|The preceding expression occurs at least min times and occurs maximally max times.|
+|{0,max}| The preceding expression may occur max times.|
 
 ----
 
-## Reguläre Ausdrücke: Beispiele I
+## Regular expressions: Examples I
 
-Damit lassen sich bereits einfache Suchen gestalten:
+This makes it possible to design simple searches:
 
 ```{r}
 y <- count("GERMAPARL", query = '"Multikult.*"', cqp = TRUE, breakdown = TRUE)
 head(y, n = 3)
 ```
 
-Wichtig ist, dass alternative Zeichen in eckigen Klammern angegeben werden können. Wenn wir nicht mit dem *flag* %c arbeiten möchten, können wir auch suchen ...
+It is important that alternative characters are enclosed in square brackets. If we don't want to work with the *flag* %c we can also search for ...
 
 ```{r}
 y <- count("GERMAPARL", query = '"[mM]ultikult.*"', cqp = TRUE, breakdown = TRUE)
@@ -123,9 +120,9 @@ head(y, n = 3)
 ```
 
 
-## Reguläre Ausdrücke: Beispiele II
+## Regular expressions: Examples II
 
-Während in eckigen Klammern alternative einzelne Buchstaben angegeben werden könne, können in runden Klammern alternative Zeichenfolgen angegeben werden, die jeweils mit einem senkrechten Querstrich ("|") getrennt werden. 
+While alternative individual letters may be specified in square brackets, alternative character strings may be specified in round brackets, each separated by a vertical dash ("|").
 
 
 ```{r}
@@ -141,9 +138,9 @@ head(y)
 ----
 
 
-## CQP I: Grundlagen
+## CQP I: Basics
 
-CQP erweitert die Syntax der regulären Ausdrücke um Möglichkeiten, über mehrere Worte ("Tokens") Abfragen zu formulieren. CQP kann die verschiedenen Annotationen eines linguistisch annotierten Korpus abfragen. Das Datenformat ist grundsätzlich tabellarisch. Das heißt, wenn neben der Ursprünglichen Wortform (p-Attribut "word") auch ein Wortarterkennung (sog. "Part-of-Speech"-Annotation, p-Attribut "pos") und eine Lemmatisierung (p-Attribute "lemma") durchgeführt wurde, so ist ein dreispaltiger *tokenstream* verfügbar, der zum Beispiel zu Anfang einer Plenardebatte wie folgt aussehen kann. Die erste Spalte gibt die *corpus position* ("cpos") wider:
+CQP extends the syntax of regular expressions to include options to formulate queries using multiple words ("tokens"). CQP can query the different annotations of a linguistically annotated corpus. The data format is always in tabular form. This means that if, in addition to the original word form (p attribute "word"), a word type recognition (so-called "part of speech" notation, p attribute "pos") and lemmatization (p attribute "lemma") has been executed, a three-column *tokenstream* is available, which can look as follows at the beginning of a plenary debate, for example. The first column shows the *corpus position* ("cpos"):
 
 ```{r, echo = FALSE, message = FALSE}
 P <- partition("GERMAPARL", speaker = "Angela Merkel", lp = "15")
@@ -164,9 +161,9 @@ kableExtra::kable_styling(K, font_size = 18, position = "left")
 
 ---- 
 
-## CQP II: Suche im Tokenstream
+## CQP II: Searching in the tokenstream
 
-Wenn über die CQP-Syntax im p-Attribut "word" gesucht wird, muss der Suchbegriff nur in Anführungszeichen gesetzt werden. Um die anderen p-Attribute anzusteuern, wird in eckigen Klammern angegeben, auf welches Attribut man sich beziehen möchte. Mit dem folgenden Suchbegriff "Q" sucht man etwa Abfolgen von einem Nomen, dann "mit" und einem Wort, dass mit "Migrations" beginnt.
+If you use the CQP syntax to search in the p attribute "word", the search term must only be enclosed in quotation marks. To access the other p attributes, the attribute to which you want to refer is specified in square brackets. With the following search term "Q" you search for sequences of a noun, then "with" and a word that begins with "Migrations".
 
 
 ```{r, eval = TRUE}
@@ -178,16 +175,16 @@ head(C[,c("match", "count", "share")])
 
 ----
 
-## CQP III: Quantoren
+## CQP III: Quantizers
 
-Als Platzhalter für beliebige Worte dienen leere eckige Klammern. Beispielsweise ... 
+Empty square brackets serve as placeholders for any words. For example ... 
 
 ```{r}
 y <- count("GERMAPARL", query = '"(Bundesm|M)inisterium" [] [pos = "NN"]', cqp = TRUE, breakdown = TRUE)
 head(y[,c("match", "count", "share")], n = 3)
 ```
 
-Entsprechend der bereits von den regulären Ausdrücken bekannten Notation kann in geschweiften Klammern angegeben werden, wie viele beliebige Worte auftreten sollen.
+According to the notation already known from the regular expressions, you can specify in curved brackets how many arbitrary words should occur.
 
 ```{r}
 y <- count("GERMAPARL", query = '"([Kk]riminell.*|Straftat.*)" []{0,5} "Asyl.*"', cqp = TRUE, breakdown = TRUE)
@@ -197,9 +194,9 @@ head(y[,c("match", "count", "share")], n = 3)
 
 ---- 
 
-## CQP: Alle polmineR-Methoden können das
+## CQP: All polmineR methods can use this
 
-Wie eingangs angesprochen steht die CQP-Syntax bei allen Basis-Methoden des polmineR-Pakets zur Verfügung.
+As mentioned above, the CQP syntax is available for all basic methods of the polmineR package.
 
 ```{r}
 K <- kwic("GERMAPARL", query = '"Integration" []{0,5} ".*[Ss]cheiter.*"', cqp = TRUE)
@@ -213,28 +210,28 @@ D <- dispersion("GERMAPARL", query = '"[rR]assis.*"', sAttribute = "party")
 C <- cooccurrences("GERMAPARL", query = '"([mM]uslim.|[iI]slam*)"', cqp = TRUE)
 ```
 
-Natürlich ist das auch dann der Fall, wenn Sie diese Basis-Methoden auf Partitionen anwenden.
+Of course, this is also the case if you apply these basic methods to partitions.
 
 ```{r}
 post2001 <- partition("GERMAPARL", year = 2002:2009, verbose = FALSE)
 C <- cooccurrences(post2001, query = '"([mM]uslim.|[iI]slam*)"', cqp = TRUE)
 ```
 
-CQP ist ein mächtiges Analysewerkzeug! Richtige Suchabfragen zu formulieren, erfordert allerdings etwas Übung. Beachten Sie hierbei insbesondere:
+CQP is a powerful analysis tool! Formulating the right search queries, however, requires some practice. Pay particular attention to this:
 
-  * Vergessen Sie nicht, CQP-Abfragen in einfache öffnende und schließende Anführungszeichen zu setzen!
+*  Don't forget to put CQP queries in single opening and closing quotes!
   
-  * Wenn Sie eine Fehlermeldung erhalten, prüfen Sie, ob öffnende Anführungszeichen, eckige oder geschweifte Klammern jeweils geschlossen werden!
+* If you receive an error message, check whether opening quotation marks, square brackets or curved brackets are closed!
 
-Viel Erfolg! 
+Good luck! 
 
 
 
 ----
 
-## Anhang: Das Stuttgart-Tübingen-Tagset (Auszug)
+## Appendix: The Stuttgart-Tübingen Tagset (excerpt)
 
-|Notation|Beschreibung|Beispiel|
+|Notation|Description|Example|
 |:------:|------------|--------|
 |ADJA|attributives Adjektiv| [das] große [Haus]|
 |ART| bestimmter oder unbestimmter Artikel | der, die, das, ein, eine, ... |
