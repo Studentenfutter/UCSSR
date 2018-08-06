@@ -1,6 +1,6 @@
 ---
 title: 'Text as Linguistic Data'
-subtitle: 'Korpusanalyse mit polmineR im Überblick'
+subtitle: 'Corpus analysis with polmineR - An Overview'
 author: "Andreas Blaette"
 date: "16. Juli 2018"
 output:
@@ -13,44 +13,43 @@ editor_options:
 ---
 
 
-## Warum Korpusanalyse mit R?
+## Why do corpus analysis with R?
 
-- R als sozialwissenschaftliche 'lingua franca'
-- Interaktivität
-- freundliche Nutzercommunity
-- RStudio als IDE
-- dynamische Weiterentwicklung von R, RStudio
+- R as a lingua franca of social sciences
+- interactivity
+- friendly user community
+- RStudio as IDE
+- dynamic and ongoing development of R and RStudio
 
 
-## Zielsetzungen von polmineR
+## Aims of polmineR
 
-- Quelloffenheit (Open Source)
-- Portabilität (Nutzung unter Windows, macOS, Linux)
-- Interaktivität
-- Reproduzierbarkeit und Validität (durch Volltextanzeigen)
-- Performanz
-- Nutzerfreundlichkeit (Dokumentation)
-
+- Open Source
+- Portability (Usage with Windows, macOS, Linux)
+- Interactivity
+- Reproducibility and validity (through full text displays)
+- Performance
+- User-friendly (documentation)
 ----
 
 ## Installation
 
-### Systemvoraussetzungen
+### System requirements
 
 - Windows, macOS, Linux
-- (möglichst) mehr als 4GB Arbeitsspeicher
-- optional: mehrere Prozessorkerne, SSD
+- (if possible) more than 4GB RAM
+- optional: multiple processor cores, SSD
 
 
-### Installation von polmineR: Windows
+### Installing polmineR: Windows
 
-#### Installation des CRAN-Relase
+#### Installing the CRAN relase
 
 ```{r, eval = FALSE}
 install.packages("polmineR")
 ```
 
-#### Installation der Entwicklungsversion auf GitHub
+#### Installing the development version from GitHub
 
 ```{r, eval = FALSE}
 devtools::install_github("PolMine/polmineR", ref = "dev")
@@ -58,29 +57,29 @@ devtools::install_github("PolMine/polmineR", ref = "dev")
 
 ----
 
-## Schritte nach der Installation
+## Post-installation Steps
 
 ```{r, eval = FALSE}
 library(polmineR)
 ```
 
-### Umgebungsvariable CORPUS_REGISTRY
+### Environment Variable CORPUS_REGISTRY
 
-Die Umgebungsvariable 'CORPUS_REGISTRY' kann folgendermaßen vorübergehend gesetzt werden.
+The environment variable'CORPUS_REGISTRY' can be set like this:
 
 ```{r, eval = FALSE}
 Sys.getenv("CORPUS_REGISTRY")
 Sys.setenv(CORPUS_REGISTRY = "/var/local/cwb/registry")
 ```
 
-Die dauerhafte Definition ist möglich über folgende Dateien:
+Persistent definition is possible via the following files:
 - .Renviron
-- Startup-Dateien in /etc/R/
+- Startup data in /etc/R/
 
 
-### Installation von Korpora
+### Installation of Corpora
 
-Über ein ['drat'-Repositorium](https://cran.r-project.org/web/packages/drat/vignettes/DratFAQ.html) des PolMine-Projekts bei GitHub stehen Datenpakete mit Korpora zur Verfügung. Im Regelfall enthalten diese nur kleine Testdaten. Das eigentliche Korpus muss dann nachgeladen werden. Anhand des GermaParl-Pakets soll der Weg der Installation dieser Pakete beschrieben werden.
+Via a ['drat'-Repository](https://cran.r-project.org/web/packages/drat/vignettes/DratFAQ.html) of the PolMine project at GitHub data packages with corpora are available. Normally they contain only small test data. The actual corpus must then be loaded subsequently. The GermaParl package is used to describe how to install these packages.
 
 ```{r, eval = FALSE}
 install.packages("drat")
@@ -88,14 +87,14 @@ drat::addRepo("polmine")
 install.packages("GermaParl")
 ```
 
-Nachladen des Korpus dann folgendermaßen:
+Load the corpus like this:
 
 ```{r, eval = FALSE}
 library(GermaParl)
 germaparl_download_corpus()
 ```
 
-Aktivierung der Korpora im GermaParl-Paket dann mit:
+After that, activate the corpus of the GermaParl package via
 
 ```{r, eval = FALSE}
 library(polmineR)
@@ -104,28 +103,28 @@ use("GermaParl")
 
 ----
 
-### polmineR - Schnelleinstieg (Arbeit mit Korpora und CQP)
+### polmineR - Quick-start (work with Corpora and CQP)
 
-Anzeige von Konkordanzen / Keyword-in-Context (KWIC) ...
+Display of Concordances / Keyword-in-Context (KWIC) ...
 
 ```{r, eval = FALSE}
 kwic("GERMAPARL", "Islam", meta = "year")
 kwic("GERMAPARL", '[pos = "ADJA"] "Integration"', cqp = TRUE, meta = "speaker")
 ```
 
-Zählung von Worthäufigkeiten ...
+Counting word frequencies...
 
 ```{r, eval = FALSE}
 cnt <- count("GERMAPARL", p_attribute = "word")
 ```
 
-Arbeit mit komplexen Suchbegriffen (CQP Syntax)
+Working with complex queries (CQP Syntax)...
 
 ```{r, eval = FALSE}
 count("GERMAPARL", query = '[pos = "ADJA"] "Integration"')
 ```
 
-Verteilung eines Suchbegriffs ...
+Distribution of a search query ...
 
 ```{r, eval = FALSE}
 d <- dispersion("GERMAPARL", query = "Aussiedler", s_attribute = "year")
@@ -133,21 +132,21 @@ d <- dispersion("GERMAPARL", query = "Aussiedler", s_attribute = "year")
 
 ----
 
-### polmineR - Schnelleinstieg (Arbeit mit Subkorpora / "Partitionen")
+### polmineR - Quick-start (working with subcorpora / "partitions")
 
-Anlegen einer Partition ...
+Create a Partition ...
 
 ```{r, eval = FALSE}
 merkel <- partition("GERMAPARL", speaker = "Angela Merkel", date = "2005-11-30", type = "plpr")
 ```
 
-Lesen des Volltexts ...
+Display the full text ...
 
 ```{r, eval = FALSE}
 read(regerklaerung)
 ```
 
-Anzeige von Konkordanzen ...
+Show Concordances ...
 
 ```{r, eval = FALSE}
 bt2002 <- partition("GERMAPARL", year = "2002", interjection = FALSE)
@@ -157,7 +156,7 @@ kwic(bt2002, "Islam", meta = c("year", "speaker", "party"))
 kwic(bt2002, "Islam", meta = c("year", "speaker", "party"), left = 30, right = 30)
 ```
 
-Frequenzzählung
+Frequency counting
 
 ```{r, eval = FALSE}
 bt2002 <- partition("GERMAPARL", year = "2002", p_attribute = "word", type = "plpr")
@@ -172,7 +171,7 @@ view(M)
 
 ----
 
-### Ein kleines Visualisierungsszenario
+### A small visualization scenario
 
 ```{r, eval = TRUE}
 library(RColorBrewer)
@@ -210,30 +209,30 @@ wordcloud(
 ----
 
 
-## Anlegen von Partition
+## Create Partitions
 
 
-### Eine wichtige Unterscheidung
+### One important distinction
 
 - s-Attribute (parameter s_attributes)
 - p-Attribute (parameter p_attributes)
 
 
-### Exploration eines Korpus
+### Exploration of a corpus
 
-Finden verfügbarer p-Attribute
+Find available p-Attributes
 
 ```{r, eval = TRUE}
 p_attributes("GERMAPARL")
 ```
 
-Finden verfügbarer s-Attribute 
+Find available s-Attributes
 
 ```{r, eval = FALSE}
 s_attributes("GERMAPARL")
 ```
 
-Finden der Ausprägungen eines s-Attributes
+Determining the values of an s-attribute
 
 ```{r, eval = TRUE}
 speakers <- s_attributes("GERMAPARL", "speaker")
@@ -243,7 +242,7 @@ head(speakers)
 ----
 
 
-#### Partitionierung
+#### Partitioning
 
 
 ```{r, eval = FALSE}
@@ -253,23 +252,21 @@ bk <- partition("GERMAPARL", speaker = c("Gerhard Schröder", "Angela Merkel"), 
 ```
 
 ----
-
-Kurzeinführung in die Welt der regulären Ausdrücke
+Short introduction to the world of regular expressions
 --------------------------------------------------
 
-** Zeichenklassen: **
-. beliebiges Zeichen
-\\d Zahl
+**Character classes: **
+. any character
+\\d number
 
-** Quantoren **
-+ mindestens einmal
-* keinmal oder beliebig oft
-{} bestimmte Anzahl
+** Quantizers **
++ at least once
+* none or any number of times
+{} certain number
 
-** Sonstiges **
-Alternativen in Klammern
-alternative Zeichen in eckigen Klammern 
-
+** Miscellaneous **
+Alternatives in brackets
+alternative characters in square brackets 
 
 ```{r, eval = FALSE}
 schroederPost911 <- partition(
@@ -279,7 +276,7 @@ schroederPost911 <- partition(
 sAttributes(schroederPost911, "date")
 ```
 
-Partitionen bündeln!
+Bundle Partitions!
 ---------------------
 
 ```{r, eval = FALSE}
@@ -295,7 +292,7 @@ label(schroeder, meta = "speaker_date")
 ```
 
 
-Ein fortgeschrittenes Szenario
+An advanced scenario
 ------------------------------
 
 ```{r, eval = FALSE}
@@ -310,10 +307,10 @@ foo <- partition("GERMAPARL", date =sessionsAftermath, p_attribute="word")
 view(foo)
 ```
 
-Einige weitere Möglichkeiten
+Some additional possibilities
 
 ----------------------------
-- in partitionen hineinzoomen
+- zoom into partitions
 - session settings
 
 ```{r, eval = FALSE}
@@ -323,7 +320,7 @@ corpus(session) <- "BT"
 ```
 
 
-Frequenzzählungen
+Frequency Counting
 =================
 
 ## count()
@@ -360,14 +357,14 @@ linechart(as.data.frame(t(mig2)))
 ```
 
 
-### Frequenzzählung mit CQP-Syntax
+### Frequency counting with CQP syntax
 
-## Nutzung der CQP-Syntax
+## Using the CQP syntax
 
-Grundlagen:
-- Ansteuern von p-Attributen
-- Quantoren 
-- Platzhalter
+Basics:
+- Triggering p attributes
+- quantizers 
+- place markers
 
 ```{r, eval = FALSE}
 sttsTagsetInfo <- "http://www.ims.uni-stuttgart.de/forschung/ressourcen/lexika/TagSets/stts-table.html"
@@ -407,13 +404,13 @@ frequencies()
 foo <- frequencies(bt, query='"[mM]ultikult.*"', pAttribute=NULL)
 ```
 
-Übung: Parteienunterschiede ...
+Exercise: Differences between political parties ...
 
 ```{r, eval = FALSE}
 csu <- partition(list(speaker_party=".*CSU.*"), regex=TRUE)
 ```
 
-Konkordanzen
+Concordances
 ============
 
 ```{r, eval = FALSE}
@@ -427,13 +424,12 @@ foo <- frequencies(bt, '"()"')
 Bkwic(bt, '"Krieg" "gegen" []{0,1} [pos="NN"]', meta=c("speaker_date", "speaker_party"))
 ```
 
-Inspektion der Hilfe ...
+Help inspection ...
 
-Und ein Beispiel: Prävention in der Sozialpolitik
+And an example: prevention in social policy
 
 
-#### Kollokationsanalysen
-
+##### Collocation analyses
 
 ```{r, eval = FALSE}
 bt <- partition("BT", list(speaker_year="2006"), regex=TRUE)
@@ -450,26 +446,24 @@ wordcloud(
 dotplot(islam2, col="ll", 25)
 ```
 
-weiterführend: Als Testverfahren implementiert t-test, PMI, log-likelihood
+Going further: t-test, PMI, log-likelihood implemented as a test procedure
 
-** Beachte: **
-- Abhängigkeit der statistischen Testwerte von der Korpusgröße
-- keine unmittelbare Vergleichbarkeit der Testwerte!
-- qualitative Validierung
-
-
-** Diskussion: **
-Welche Filter sind angemessen?
-Welche Schwellenwerte sind angemessen?
-Welcher Kontext ist bei politikwissenschaftlichen Fragestellungen angemessen?
+** Note: **
+- Dependency of the statistical test values on the corpus size
+- no immediate comparability of the test values!
+- qualitative validation
 
 
+** Discussion: **
+Which filters are appropriate?
+Which thresholds are appropriate?
+What is the appropriate context for political science questions?
 ----
 
-#### Schlagwortanalysen
+#### Keyword analyses
 
 
-Was nicht funktioniert ...
+What doesn't work...
 
 ```{r, eval = FALSE}
 schroeder1 <- partition("GERMAPARL", speaker = "Gerhard Schröder", date = "2001-09-12", pAttribute = "word")
@@ -488,7 +482,7 @@ view(keyws3)
 ```
 
 
-Mehr ist besser ...
+The more, the better ...
 
 ```{r, eval = FALSE}
 bt2002 <- partition("GERMAPARL", year = "2002", interjection = FALSE, pAttribute="word")
@@ -499,10 +493,10 @@ view(keyws)
 ```
 
 
-Übung: Themenschwerpunkte von Schröder in der 15. Legislaturperiode?
+Exercise: Main topics of Schröder in the 15th legislative period?
 
 
-Perspektiven der Textstatistik
+Perspectives for text statistics
 ==============================
 
 ```{r, eval = FALSE}
@@ -526,10 +520,10 @@ View(terms(tmodel, k=20))
 ```
 
 
-### Was passiert da eigentlich?!
+### What's actually happening?!
 
-- S4-Klassen und ihre Slots (Strukturanalyse mit str())
-- Vererbung von Methoden, weniger zu merken
+- S4 classes and their slots (structure analysis with str())
+- Inheritance of methods, less to remember
 
 ```{r, eval = FALSE}
 str(nounsOnly)
@@ -540,9 +534,9 @@ getMethod("subset", "textstat")
 
 ----
 
-## Ausblick: Alternativen
+## Prospects: options
 
-- Perl (reguläre Ausdrücke etc.)
-- Python (NLTK,  etc.)
+- Perl (regular expressions etc.)
+- Python (NLTK, etc.)
 - Java (Stanford NLP, mallet etc.)
-- C++ (Performanz)
+- C++ (Performance)
